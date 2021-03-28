@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const ld = require("lodash");
-const { parse } = require("path");
 
 // regex
 const STR_FORMAT = /^.*\.(srt)$/gi;
