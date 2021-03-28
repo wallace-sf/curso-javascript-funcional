@@ -1,10 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const ld = require("lodash");
+const { parse } = require("path");
 
 // regex
 const STR_FORMAT = /^.*\.(srt)$/gi;
-const WORD_ONLY = /(?<!(<\/))((?<!(\s<))(\b([a-zA-Z'])+\b))/gi;
+const ENGLISH_WORDS_ONLY = /\b([a-zA-Z'])+\b/gi;
 
 // common
 const readFilePromised = (path, options = {}) => {
@@ -23,7 +24,7 @@ const readDirPromised = (path, options = {}) => {
   });
 };
 
-const readAllStrFiles = (pathSubtitles, fileNames = []) => {
+const readAllFiles = (pathSubtitles) => (fileNames = []) => {
   const readFilesPromises = fileNames.map((filename) => {
     const filePath = path.join(pathSubtitles, filename);
 
@@ -32,8 +33,26 @@ const readAllStrFiles = (pathSubtitles, fileNames = []) => {
     });
   });
 
-  return readFilesPromises;
+  return Promise.all(readFilesPromises);
 };
+
+const removeSubStrFromStr = (arrSubStr = []) => (str) =>
+  arrSubStr.reduce(
+    (acc, subStr) => acc.replace(new RegExp(subStr, "gi"), ""),
+    str
+  );
+
+const removeElementsIfEmpty = (arr = []) => arr.filter((el) => !!el);
+
+const removeElementsIfIncludes = (arrStr = []) => (arr = []) =>
+  arr.filter((el) => !arrStr.some((str) => el.includes(str)));
+
+const removeIfOnlyNumbers = (arr = []) =>
+  arr.filter((el) => {
+    const parsedElement = parseInt(el);
+
+    return parsedElement !== parsedElement;
+  });
 
 // get
 
@@ -41,7 +60,7 @@ const getStrFiles = (filesNameArr = []) =>
   filesNameArr.filter((fileName) => !!fileName.match(STR_FORMAT));
 
 const getWordsOnly = (stringArr = []) =>
-  stringArr.map((text) => text.match(WORD_ONLY));
+  stringArr.map((text) => text.match(ENGLISH_WORDS_ONLY) || "");
 
 // map
 const mapWordInObj = (wordsOnlyArr = []) =>
@@ -52,20 +71,31 @@ const groupByWord = (arrWordInObj = []) =>
     .values(ld.groupBy(arrWordInObj, "word"))
     .map((group) => ({ ...group[0], qty: group.length }));
 
+const orderByQty = (arrWords) => ld.orderBy(arrWords, ["qty"], ["desc"]);
+
 // to
-const toStringArr = (arr = []) => arr.map((text) => text.toString());
-const toLowerCaseArr = (arr = []) => arr.map((text = "") => text.toLowerCase());
-const toCapitalizeWordArr = (arr = []) =>
-  arr.map((el) => ({ ...el, word: ld.capitalize(el.word) }));
+const toStringArr = (arr = []) => arr.map((el) => el.toString());
+const toSplittedStr = (separator) => (text) => text.split(separator);
+const toCapitalizedArr = (arr = []) =>
+  arr.map((text = "") => ld.capitalize(text));
+const toJoinedArrays = (arr = []) => arr.join();
+const toFlattedArr = (arr = []) => arr.flat();
 
 module.exports = {
   readDirPromised,
   getStrFiles,
-  readAllStrFiles,
+  readAllFiles,
+  removeSubStrFromStr,
+  removeElementsIfEmpty,
+  removeElementsIfIncludes,
+  removeIfOnlyNumbers,
   toStringArr,
+  toSplittedStr,
   getWordsOnly,
-  toLowerCaseArr,
+  toCapitalizedArr,
+  toJoinedArrays,
   mapWordInObj,
   groupByWord,
-  toCapitalizeWordArr,
+  orderByQty,
+  toFlattedArr,
 };
