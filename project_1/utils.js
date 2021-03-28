@@ -36,6 +36,14 @@ const readAllFiles = (pathSubtitles) => (fileNames = []) => {
   return Promise.all(readFilesPromises);
 };
 
+const writeFilePromised = (path, data, options = {}) => {
+  return new Promise((resolve, reject) => {
+    const writeFileCb = (err) => (err ? reject(err) : resolve());
+
+    fs.writeFile(path, data, options, writeFileCb);
+  });
+};
+
 const removeSubStrFromStr = (arrSubStr = []) => (str) =>
   arrSubStr.reduce(
     (acc, subStr) => acc.replace(new RegExp(subStr, "gi"), ""),
@@ -71,7 +79,7 @@ const groupByWord = (arrWordInObj = []) =>
     .values(ld.groupBy(arrWordInObj, "word"))
     .map((group) => ({ ...group[0], qty: group.length }));
 
-const orderByQty = (arrWords) => ld.orderBy(arrWords, ["qty"], ["desc"]);
+const orderByQty = (arrWords) => ld.orderBy(arrWords, ["qty", 'word'], ["desc", 'asc']);
 
 // to
 const toStringArr = (arr = []) => arr.map((el) => el.toString());
@@ -85,6 +93,7 @@ module.exports = {
   readDirPromised,
   getStrFiles,
   readAllFiles,
+  writeFilePromised,
   removeSubStrFromStr,
   removeElementsIfEmpty,
   removeElementsIfIncludes,

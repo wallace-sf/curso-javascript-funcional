@@ -4,6 +4,7 @@ const {
   readDirPromised,
   getStrFiles,
   readAllFiles,
+  writeFilePromised,
   removeSubStrFromStr,
   removeElementsIfEmpty,
   removeElementsIfIncludes,
@@ -20,6 +21,9 @@ const {
 } = require("./utils");
 
 const pathSubtitles = path.join(__dirname, "../data/legendas");
+const pathWriteFileSubstitle = path.join(__dirname, 'word_counter_bb99.json');
+
+console.log(pathWriteFileSubstitle);
 
 readDirPromised(pathSubtitles)
   .then(getStrFiles)
@@ -38,5 +42,7 @@ readDirPromised(pathSubtitles)
   .then(mapWordInObj)
   .then(groupByWord)
   .then(orderByQty)
-  .then(console.log)
+  .then((arrWords) =>
+    writeFilePromised(pathWriteFileSubstitle, JSON.stringify(arrWords))
+  )
   .catch(console.log);
