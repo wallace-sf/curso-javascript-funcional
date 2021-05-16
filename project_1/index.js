@@ -18,31 +18,31 @@ const {
   groupByWord,
   orderByQty,
   toFlattedArr,
+  composition,
 } = require("./utils");
 
 const pathSubtitles = path.join(__dirname, "../data/legendas");
-const pathWriteFileSubstitle = path.join(__dirname, 'word_counter_bb99.json');
+const pathWriteFileSubstitle = path.join(__dirname, "word_counter_bb99.json");
 
-console.log(pathWriteFileSubstitle);
+const composedResult = composition(
+  readDirPromised,
+  getStrFiles,
+  readAllFiles(pathSubtitles),
+  toStringArr,
+  toJoinedArrays,
+  removeSubStrFromStr(["<i>", "</i>", "\r"]),
+  toSplittedStr("\n"),
+  removeElementsIfEmpty,
+  removeElementsIfIncludes(["-->", "<font", "</font>"]),
+  removeIfOnlyNumbers,
+  getWordsOnly,
+  toFlattedArr,
+  removeElementsIfEmpty,
+  toCapitalizedArr,
+  mapWordInObj,
+  groupByWord,
+  orderByQty,
+  writeFilePromised(pathWriteFileSubstitle)
+);
 
-readDirPromised(pathSubtitles)
-  .then(getStrFiles)
-  .then(readAllFiles(pathSubtitles))
-  .then(toStringArr)
-  .then(toJoinedArrays)
-  .then(removeSubStrFromStr(["<i>", "</i>", "\r"]))
-  .then(toSplittedStr("\n"))
-  .then(removeElementsIfEmpty)
-  .then(removeElementsIfIncludes(["-->", "<font", "</font>"]))
-  .then(removeIfOnlyNumbers)
-  .then(getWordsOnly)
-  .then(toFlattedArr)
-  .then(removeElementsIfEmpty)
-  .then(toCapitalizedArr)
-  .then(mapWordInObj)
-  .then(groupByWord)
-  .then(orderByQty)
-  .then((arrWords) =>
-    writeFilePromised(pathWriteFileSubstitle, JSON.stringify(arrWords))
-  )
-  .catch(console.log);
+composedResult(pathSubtitles);

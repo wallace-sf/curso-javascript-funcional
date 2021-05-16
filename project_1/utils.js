@@ -6,6 +6,9 @@ const ld = require("lodash");
 const STR_FORMAT = /^.*\.(srt)$/gi;
 const ENGLISH_WORDS_ONLY = /\b([a-zA-Z'])+\b/gi;
 
+// assertives
+const isPromise = (value) => Promise.resolve(value) === value;
+
 // common
 const readFilePromised = (path, options = {}) => {
   return new Promise((resolve, reject) => {
@@ -23,36 +26,43 @@ const readDirPromised = (path, options = {}) => {
   });
 };
 
-const readAllFiles = (pathSubtitles) => (fileNames = []) => {
-  const readFilesPromises = fileNames.map((filename) => {
-    const filePath = path.join(pathSubtitles, filename);
+const readAllFiles =
+  (pathSubtitles) =>
+  (fileNames = []) => {
+    const readFilesPromises = fileNames.map((filename) => {
+      const filePath = path.join(pathSubtitles, filename);
 
-    return new Promise((resolve, reject) => {
-      readFilePromised(filePath).then(resolve).catch(reject);
+      return new Promise((resolve, reject) => {
+        readFilePromised(filePath).then(resolve).catch(reject);
+      });
     });
-  });
 
-  return Promise.all(readFilesPromises);
-};
+    return Promise.all(readFilesPromises);
+  };
 
-const writeFilePromised = (path, data, options = {}) => {
-  return new Promise((resolve, reject) => {
-    const writeFileCb = (err) => (err ? reject(err) : resolve());
+const writeFilePromised =
+  (path, options = {}) =>
+  (data) =>
+    new Promise((resolve, reject) => {
+      const writeFileCb = (err) => (err ? reject(err) : resolve());
 
-    fs.writeFile(path, data, options, writeFileCb);
-  });
-};
+      fs.writeFile(path, JSON.stringify(data), options, writeFileCb);
+    });
 
-const removeSubStrFromStr = (arrSubStr = []) => (str) =>
-  arrSubStr.reduce(
-    (acc, subStr) => acc.replace(new RegExp(subStr, "gi"), ""),
-    str
-  );
+const removeSubStrFromStr =
+  (arrSubStr = []) =>
+  (str) =>
+    arrSubStr.reduce(
+      (acc, subStr) => acc.replace(new RegExp(subStr, "gi"), ""),
+      str
+    );
 
 const removeElementsIfEmpty = (arr = []) => arr.filter((el) => !!el);
 
-const removeElementsIfIncludes = (arrStr = []) => (arr = []) =>
-  arr.filter((el) => !arrStr.some((str) => el.includes(str)));
+const removeElementsIfIncludes =
+  (arrStr = []) =>
+  (arr = []) =>
+    arr.filter((el) => !arrStr.some((str) => el.includes(str)));
 
 const removeIfOnlyNumbers = (arr = []) =>
   arr.filter((el) => {
@@ -60,6 +70,14 @@ const removeIfOnlyNumbers = (arr = []) =>
 
     return parsedElement !== parsedElement;
   });
+
+const composition =
+  (...fns) =>
+  (value) =>
+    fns.reduce(
+      async (acc, fn) => (isPromise(acc) ? fn(await acc) : fn(acc)),
+      value
+    );
 
 // get
 
@@ -78,7 +96,8 @@ const groupByWord = (arrWordInObj = []) =>
     .values(ld.groupBy(arrWordInObj, "word"))
     .map((group) => ({ ...group[0], qty: group.length }));
 
-const orderByQty = (arrWords) => ld.orderBy(arrWords, ["qty", 'word'], ["desc", 'asc']);
+const orderByQty = (arrWords) =>
+  ld.orderBy(arrWords, ["qty", "word"], ["desc", "asc"]);
 
 // to
 const toStringArr = (arr = []) => arr.map((el) => el.toString());
@@ -89,6 +108,7 @@ const toJoinedArrays = (arr = []) => arr.join();
 const toFlattedArr = (arr = []) => arr.flat();
 
 module.exports = {
+  composition,
   readDirPromised,
   getStrFiles,
   readAllFiles,
