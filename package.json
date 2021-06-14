@@ -6,6 +6,8 @@
   "author": "Wallace <wallaceedua@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "rxjs": "6.0.0",
+    "xmlhttprequest": "^1.8.0"
   }
 }

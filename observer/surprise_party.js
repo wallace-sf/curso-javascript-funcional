@@ -31,7 +31,7 @@ function dispatchEvent(key = "", events = {}) {
 }
 
 function shouldTriggerEvent(key = "", events = {}) {
-  return typeof events[key.toLowerCase()] === "function" ? true : false;
+  return typeof events[key.toLowerCase()] === "function";
 }
 
 async function doormanSubject(...observers) {
@@ -39,7 +39,7 @@ async function doormanSubject(...observers) {
     const response = await getResponse("O namorado chegou? (s/N/q): ");
     const events = {
       s: () => observers.forEach((observer) => observer()),
-      n: () => observers.forEach((observer) => observer()),
+      n: () => {},
     };
 
     if (shouldTriggerEvent(response, events)) {
