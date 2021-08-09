@@ -4,7 +4,7 @@ const { removeSubStrFromStr } = require("./removeSubStrFromStr");
 const { toSplittedStr } = require("./toSplittedStr");
 const { removeElementsIfEmpty } = require("./removeElementsIfEmpty");
 const { removeElementsIfIncludes } = require("./removeElementsIfIncludes");
-const { removeIfOnlyNumbers } = require("./removeIfOnlyNumbers");
+const { removeIfStartWithNumber } = require("./removeIfStartWithNumber");
 const { getWordsOnly } = require("./getWordsOnly");
 const { toFlattedArr } = require("./toFlattedArr");
 const { toCapitalizedArr } = require("./toCapitalizedArr");
@@ -19,7 +19,7 @@ module.exports = {
   toSplittedStr,
   removeElementsIfEmpty,
   removeElementsIfIncludes,
-  removeIfOnlyNumbers,
+  removeIfStartWithNumber,
   getWordsOnly,
   toFlattedArr,
   toCapitalizedArr,

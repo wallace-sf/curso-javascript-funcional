@@ -1,6 +1,6 @@
 const { map } = require("rxjs/operators");
 
-const removeIfOnlyNumbers = () =>
+const removeIfStartWithNumber = () =>
   map((arr = []) =>
     arr.filter((el) => {
       const parsedElement = parseInt(el);
@@ -9,4 +9,4 @@ const removeIfOnlyNumbers = () =>
     })
   );
 
-module.exports = { removeIfOnlyNumbers };
+module.exports = { removeIfStartWithNumber };
